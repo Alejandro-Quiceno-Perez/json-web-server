@@ -1,0 +1,12 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.boton {
+    margin-top: 20px !important;
+    padding: 0 !important;
+    height: 50px !important;
+    width: 70px;
+}
