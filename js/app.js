@@ -7,13 +7,28 @@ const tbody = document.querySelector("#tbody");
 const userName = document.querySelector("#userName");
 const userAge = document.querySelector("#userAge");
 const idUser = document.querySelector("#idUser");
+let isEditing = false
+let idUserEditing
 
 userForm.addEventListener("submit", (event) => {
+
     event.preventDefault();
-    if(idUser.value) {
+    if (idUser.value && !isEditing) {
         loadingInfo(urlBase)
     } else {
-        addUser();
+        if (isEditing) {
+
+            const putUserInfo = {
+                name: userName.value,
+                age: userAge.value,
+            }
+            PUThUser(idUserEditing, JSON.stringify(putUserInfo))
+            isEditing = false
+            idUserEditing = ''
+        } else {
+            addUser();
+        }
+
     }
 });
 
@@ -72,8 +87,8 @@ function renderUsers(users) {
 
         const tr = document.createElement("tr");
 
-        btnDelete.classList.add("btn","btn-danger", "me-5");
-        btnUpdate.classList.add("btn","btn-primary");
+        btnDelete.classList.add("btn", "btn-danger", "me-5");
+        btnUpdate.classList.add("btn", "btn-primary");
 
         btnDelete.textContent = "Delete";
         btnUpdate.textContent = "Edit";
@@ -86,8 +101,10 @@ function renderUsers(users) {
         btnUpdate.addEventListener("click", () => {
             console.log(user.id);
             loadingInfo(user)
+            isEditing = true
+            idUserEditing = user.id
         })
-        
+
 
         tdName.textContent = user.name;
         tdAge.textContent = user.age;
@@ -105,7 +122,7 @@ function renderUsers(users) {
     });
 }
 
-function loadingInfo (urlBase) {
+function loadingInfo(urlBase) {
     userAge.value = urlBase.age;
     userName.value = urlBase.name;
     idUser.value = urlBase.id;
@@ -116,4 +133,18 @@ async function deletUser(id) {
     await fetch(`${urlBase}/${id}`, {
         method: "DELETE"
     });
+}
+
+async function PUThUser(id, objetoParche) {
+    try {
+        const response = await fetch(`${urlBase}/${id}`, {
+            method: "PUT",
+            body: objetoParche,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+    } catch (error) {
+        console.error(error)
+    }
 }
